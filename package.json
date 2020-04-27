@@ -12,10 +12,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "mongoose": "^5.9.10"
   },
   "devDependencies": {
     "@types/express": "^4.17.6",
+    "@types/mongoose": "^5.7.14",
     "tsc-watch": "^4.2.3",
     "typescript": "^3.8.3"
   }

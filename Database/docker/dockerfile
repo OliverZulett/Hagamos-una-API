@@ -1,0 +1,4 @@
+FROM mongo
+RUN mkdir /sharedData
+VOLUME /bakeryStoreDB
+WORKDIR /sharedData

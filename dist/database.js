@@ -7,7 +7,8 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const config_1 = __importDefault(require("./config/config"));
 const dbOptions = {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useFindAndModify: false
 };
 mongoose_1.default.connect(process.env.MONGO_DB_URL || config_1.default.DB.LOCAL_DB, dbOptions);
 const connection = mongoose_1.default.connection;

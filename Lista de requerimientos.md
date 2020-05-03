@@ -33,7 +33,7 @@ Los administradores o vendedores de la app tendrán habilitadas secciones especi
 
 ##### API
 
-	1. Crear, editar y eliminar producto.
+	1. Crear, listar, editar y eliminar producto.
 	2. Crear SingIn y SingUp de usuarios para crear la autentificacion de roles y proteccion de cuentas.
 	3. Crear, editar y eliminar usuarios.
 	4. Crear, editar y eliminar ordenes

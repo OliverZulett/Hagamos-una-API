@@ -12,6 +12,6 @@ productsRouter.post('/', productsController.createProduct);
 // actualiza un producto
 productsRouter.put('/:id', productsController.updateProduct);
 // elimina un producto
-productsRouter.put('/:id', productsController.deleteProduct);
+productsRouter.delete('/:id', productsController.deleteProduct);
 
 export default productsRouter;

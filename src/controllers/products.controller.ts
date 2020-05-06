@@ -1,11 +1,13 @@
-import {Request, Response} from 'express';
+import { Request, Response } from 'express';
 import Product from '../models/products.model';
+import fs from 'fs-extra';
+import { v4 as uuidv4 } from 'uuid';
 
 const productsController = {
 
     async productList(req: Request, res: Response) {
         await Product.find({}, "name image price", async (err, products) => {
-    
+
             if (err) {
                 return res.status(500).json({
                     ok: false,
@@ -13,7 +15,7 @@ const productsController = {
                     errors: err
                 });
             }
-            await Product.countDocuments( (err, total) => {
+            await Product.countDocuments((err, total) => {
                 if (err) {
                     return res.status(500).json({
                         ok: false,
@@ -28,11 +30,11 @@ const productsController = {
                     total_productos: total
                 });
             });
-    
+
         });
     },
 
-    async getProductById (req:Request, res:Response){
+    async getProductById(req: Request, res: Response) {
         const id = req.params.id;
         await Product.findById(id, (err, product) => {
             if (err) {
@@ -42,7 +44,7 @@ const productsController = {
                     errors: err
                 });
             }
-            
+
             res.status(200).json({
                 ok: true,
                 message: 'producto',
@@ -51,24 +53,59 @@ const productsController = {
         });
     },
 
-    async createProduct (req:Request, res:Response) {
+    async createProduct(req: Request, res: Response) {
+
+        if (!req.files || Object.keys(req.files).length === 0) {
+            return res.status(400).json({
+                ok: false,
+                message: 'debe subir una imagen'
+            });
+        }
+        const image: any = req.files.image;
         const productReceived = req.body;
-        if (!productReceived || Object.keys(productReceived).length < 3) {
+
+        if (!productReceived || Object.keys(productReceived).length < 2) {
             return res.status(400).json({
                 ok: false,
                 message: 'parametros incompletos'
             });
         }
+
+        let fileName = '';
+
+        if (image.mimetype === 'image/png' || image.mimetype === 'image/jpeg' || image.mimetype === 'image/gif') {
+            const fileExtension = image.mimetype.split('/')[1];
+            fileName = `${uuidv4()}.${fileExtension}`;
+            const path = `./uploads${req.baseUrl}`;
+            await fs.ensureDir(path);
+            await image.mv(`${path}/${fileName}`, async (err: any) => {
+                if (err) {
+                    return res.status(500).json({
+                        ok: false,
+                        message: 'error al guardar imagen',
+                        errors: err
+                    });
+                }
+            });
+        } else {
+            return res.status(400).json({
+                ok: false,
+                message: 'tipo de imagen no admitida'
+            });
+        }
+
         const product = new Product(productReceived);
+        product.image = fileName;
+
         await product.save((err, newProduct) => {
             if (err) {
                 return res.status(500).json({
                     ok: false,
-                    message: 'error al guaradar producto',
+                    message: 'error al guardar producto',
                     errors: err
                 });
             }
-            
+
             res.status(200).json({
                 ok: true,
                 message: 'producto creado',
@@ -77,7 +114,7 @@ const productsController = {
         });
     },
 
-    async updateProduct (req:Request, res:Response){
+    async updateProduct(req: Request, res: Response) {
         const id = req.params.id;
         const productReceived = req.body;
         if (!productReceived || Object.keys(productReceived).length === 0) {
@@ -94,9 +131,29 @@ const productsController = {
                     errors: err
                 });
             }
-    
+
             const newProduct = { ...productForUpdate._doc, ...productReceived };
-    
+            if (req.files || Object.keys(req.files!).length !== 0) {
+                const image: any = req.files!.image;
+                if (image.mimetype === 'image/png' || image.mimetype === 'image/jpeg' || image.mimetype === 'image/gif') {
+                    const fileExtension = image.mimetype.split('/')[1];
+                    const fileName = `${uuidv4()}.${fileExtension}`;
+                    const path = `./uploads${req.baseUrl}`;
+                    await fs.ensureDir(path);
+                    await image.mv(`${path}/${fileName}`, async (err: any) => {
+                        if (err) {
+                            return res.status(500).json({
+                                ok: false,
+                                message: 'error al guardar imagen',
+                                errors: err
+                            });
+                        }
+                    });
+                    fs.remove(`${path}/${newProduct.image}`);
+                    newProduct.image = fileName;
+                }
+            }
+
             await Product.findByIdAndUpdate(id, newProduct, (err, productUpdated) => {
                 if (err) {
                     return res.status(500).json({
@@ -112,13 +169,13 @@ const productsController = {
                     new_producto: newProduct
                 });
             })
-            
+
         });
     },
 
-    async deleteProduct (req:Request, res:Response){
+    async deleteProduct(req: Request, res: Response) {
         const id = req.params.id;
-        await Product.findByIdAndDelete(id, (err, productDeleted) => {
+        await Product.findByIdAndDelete(id, (err, productDeleted:any) => {
             if (err) {
                 return res.status(500).json({
                     ok: false,
@@ -126,6 +183,8 @@ const productsController = {
                     errors: err
                 });
             }
+            const path = `./uploads${req.baseUrl}`;
+            fs.remove(`${path}/${productDeleted.image}`);
             res.status(200).json({
                 ok: true,
                 message: 'producto eliminado',

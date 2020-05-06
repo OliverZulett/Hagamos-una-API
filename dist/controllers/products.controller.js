@@ -13,6 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const products_model_1 = __importDefault(require("../models/products.model"));
+const uuid_1 = require("uuid");
+const fs_extra_1 = __importDefault(require("fs-extra"));
 const productsController = {
     productList(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -63,14 +65,45 @@ const productsController = {
     },
     createProduct(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            // validar que recibimos la imagen
+            if (!req.files || Object.keys(req.files).length === 0) {
+                return res.status(400).json({
+                    ok: false,
+                    message: 'debe subir una imagen'
+                });
+            }
+            let image = req.files.image;
             const productReceived = req.body;
-            if (!productReceived || Object.keys(productReceived).length < 3) {
+            if (!productReceived || Object.keys(productReceived).length < 2) {
                 return res.status(400).json({
                     ok: false,
                     message: 'parametros incompletos'
                 });
             }
+            let fileName = '';
+            if (image.mimetype === 'image/png' || image.mimetype === 'image/jpeg' || image.mimetype === 'image/gif') {
+                const path = `./uploads${req.baseUrl}`;
+                const fileExtension = image.mimetype.split('/')[1];
+                fileName = `${uuid_1.v4()}.${fileExtension}`;
+                yield fs_extra_1.default.ensureDir(path);
+                yield image.mv(`${path}/${fileName}`, function (err) {
+                    if (err) {
+                        return res.status(500).json({
+                            ok: false,
+                            message: 'error al guaradar imagen',
+                            errors: err
+                        });
+                    }
+                });
+            }
+            else {
+                return res.status(400).json({
+                    ok: false,
+                    message: 'el archivo no es una imagen'
+                });
+            }
             const product = new products_model_1.default(productReceived);
+            product.image = fileName;
             yield product.save((err, newProduct) => {
                 if (err) {
                     return res.status(500).json({
@@ -91,7 +124,7 @@ const productsController = {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id;
             const productReceived = req.body;
-            if (!productReceived || Object.keys(productReceived).length === 0) {
+            if ((!productReceived || Object.keys(productReceived).length === 0) && ((!req.files || Object.keys(req.files).length === 0))) {
                 return res.status(400).json({
                     ok: false,
                     message: 'Nada que actualizar'
@@ -106,6 +139,26 @@ const productsController = {
                     });
                 }
                 const newProduct = Object.assign(Object.assign({}, productForUpdate._doc), productReceived);
+                if (req.files && Object.keys(req.files).length !== 0) {
+                    const image = req.files.image;
+                    if (image.mimetype === 'image/png' || image.mimetype === 'image/jpeg' || image.mimetype === 'image/gif') {
+                        const path = `./uploads${req.baseUrl}`;
+                        const fileExtension = newProduct.image.split('.')[1];
+                        const fileName = `${newProduct.image.split('.')[0]}.${fileExtension}`;
+                        yield fs_extra_1.default.ensureDir(path);
+                        yield fs_extra_1.default.remove(`${path}/${newProduct.image}`);
+                        yield image.mv(`${path}/${fileName}`, function (err) {
+                            if (err) {
+                                return res.status(500).json({
+                                    ok: false,
+                                    message: 'error al guaradar imagen',
+                                    errors: err
+                                });
+                            }
+                        });
+                        newProduct.image = fileName;
+                    }
+                }
                 yield products_model_1.default.findByIdAndUpdate(id, newProduct, (err, productUpdated) => {
                     if (err) {
                         return res.status(500).json({
@@ -127,7 +180,7 @@ const productsController = {
     deleteProduct(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id;
-            yield products_model_1.default.findByIdAndDelete(id, (err, productDeleted) => {
+            yield products_model_1.default.findByIdAndDelete(id, (err, productDeleted) => __awaiter(this, void 0, void 0, function* () {
                 if (err) {
                     return res.status(500).json({
                         ok: false,
@@ -135,12 +188,14 @@ const productsController = {
                         errors: err
                     });
                 }
+                const path = `./uploads${req.baseUrl}`;
+                yield fs_extra_1.default.remove(`${path}/${productDeleted.image}`);
                 res.status(200).json({
                     ok: true,
                     message: 'producto eliminado',
                     producto: productDeleted
                 });
-            });
+            }));
         });
     }
 };

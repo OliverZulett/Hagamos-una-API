@@ -1,7 +1,7 @@
 // importaciones
 import express, {Request, Response} from 'express';
-import Product from './models/products.model';
 import productsRouter from './routes/products.routes';
+import iamgesRouter from './routes/images.routes';
 
 // inicializacion
 const app = express();
@@ -20,5 +20,7 @@ app.get('/', (req: Request, res: Response) => {
 
 // enrutador de productos
 app.use('/products', productsRouter);
+// enrutador de imagenes
+app.use('/images', iamgesRouter);
 
 export default app;

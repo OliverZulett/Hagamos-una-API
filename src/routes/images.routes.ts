@@ -1,9 +1,9 @@
 import {Router} from 'express';
-import productsController from '../controllers/products.controller';
+import imageController from '../controllers/images.controller';
 
 const iamgesRouter = Router();
 
 // obtener imagen
-iamgesRouter.get('/:type/:image', productsController.productList);
+iamgesRouter.get('/:type/:image', imageController.getImage);
 
 export default iamgesRouter;

@@ -123,7 +123,7 @@ const productsController = {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id;
             const productReceived = req.body;
-            if (!productReceived || Object.keys(productReceived).length === 0) {
+            if ((!productReceived || Object.keys(productReceived).length === 0) && (!req.files && Object.keys(req.files).length === 0)) {
                 return res.status(400).json({
                     ok: false,
                     message: 'Nada que actualizar'
@@ -138,7 +138,7 @@ const productsController = {
                     });
                 }
                 const newProduct = Object.assign(Object.assign({}, productForUpdate._doc), productReceived);
-                if (req.files || Object.keys(req.files).length !== 0) {
+                if (req.files && Object.keys(req.files).length !== 0) {
                     const image = req.files.image;
                     if (image.mimetype === 'image/png' || image.mimetype === 'image/jpeg' || image.mimetype === 'image/gif') {
                         const fileExtension = image.mimetype.split('/')[1];

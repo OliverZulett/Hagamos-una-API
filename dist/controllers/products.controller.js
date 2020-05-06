@@ -13,6 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const products_model_1 = __importDefault(require("../models/products.model"));
+const fs_extra_1 = __importDefault(require("fs-extra"));
+const uuid_1 = require("uuid");
 const productsController = {
     productList(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -77,22 +79,35 @@ const productsController = {
                     message: 'parametros incompletos'
                 });
             }
-            image.mv('./uploads/products/image.jpg', (err) => {
-                if (err) {
-                    return res.status(500).json({
-                        ok: false,
-                        message: 'error al guardar imagen',
-                        errors: err
-                    });
-                }
-            });
+            let fileName = '';
+            if (image.mimetype === 'image/png' || image.mimetype === 'image/jpeg' || image.mimetype === 'image/gif') {
+                const fileExtension = image.mimetype.split('/')[1];
+                fileName = `${uuid_1.v4()}.${fileExtension}`;
+                const path = `./uploads${req.baseUrl}`;
+                yield fs_extra_1.default.ensureDir(path);
+                yield image.mv(`${path}/${fileName}`, (err) => __awaiter(this, void 0, void 0, function* () {
+                    if (err) {
+                        return res.status(500).json({
+                            ok: false,
+                            message: 'error al guardar imagen',
+                            errors: err
+                        });
+                    }
+                }));
+            }
+            else {
+                return res.status(400).json({
+                    ok: false,
+                    message: 'tipo de imagen no admitida'
+                });
+            }
             const product = new products_model_1.default(productReceived);
-            product.image = 'image.jpg';
+            product.image = fileName;
             yield product.save((err, newProduct) => {
                 if (err) {
                     return res.status(500).json({
                         ok: false,
-                        message: 'error al guaradar producto',
+                        message: 'error al guardar producto',
                         errors: err
                     });
                 }
@@ -123,6 +138,26 @@ const productsController = {
                     });
                 }
                 const newProduct = Object.assign(Object.assign({}, productForUpdate._doc), productReceived);
+                if (req.files || Object.keys(req.files).length !== 0) {
+                    const image = req.files.image;
+                    if (image.mimetype === 'image/png' || image.mimetype === 'image/jpeg' || image.mimetype === 'image/gif') {
+                        const fileExtension = image.mimetype.split('/')[1];
+                        const fileName = `${uuid_1.v4()}.${fileExtension}`;
+                        const path = `./uploads${req.baseUrl}`;
+                        yield fs_extra_1.default.ensureDir(path);
+                        yield image.mv(`${path}/${fileName}`, (err) => __awaiter(this, void 0, void 0, function* () {
+                            if (err) {
+                                return res.status(500).json({
+                                    ok: false,
+                                    message: 'error al guardar imagen',
+                                    errors: err
+                                });
+                            }
+                        }));
+                        fs_extra_1.default.remove(`${path}/${newProduct.image}`);
+                        newProduct.image = fileName;
+                    }
+                }
                 yield products_model_1.default.findByIdAndUpdate(id, newProduct, (err, productUpdated) => {
                     if (err) {
                         return res.status(500).json({
@@ -152,6 +187,8 @@ const productsController = {
                         errors: err
                     });
                 }
+                const path = `./uploads${req.baseUrl}`;
+                fs_extra_1.default.remove(`${path}/${productDeleted.image}`);
                 res.status(200).json({
                     ok: true,
                     message: 'producto eliminado',

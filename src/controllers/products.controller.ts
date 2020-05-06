@@ -1,11 +1,11 @@
-import {Request, Response} from 'express';
+import { Request, Response } from 'express';
 import Product from '../models/products.model';
 
 const productsController = {
 
     async productList(req: Request, res: Response) {
         await Product.find({}, "name image price", async (err, products) => {
-    
+
             if (err) {
                 return res.status(500).json({
                     ok: false,
@@ -13,7 +13,7 @@ const productsController = {
                     errors: err
                 });
             }
-            await Product.countDocuments( (err, total) => {
+            await Product.countDocuments((err, total) => {
                 if (err) {
                     return res.status(500).json({
                         ok: false,
@@ -28,11 +28,11 @@ const productsController = {
                     total_productos: total
                 });
             });
-    
+
         });
     },
 
-    async getProductById (req:Request, res:Response){
+    async getProductById(req: Request, res: Response) {
         const id = req.params.id;
         await Product.findById(id, (err, product) => {
             if (err) {
@@ -42,7 +42,7 @@ const productsController = {
                     errors: err
                 });
             }
-            
+
             res.status(200).json({
                 ok: true,
                 message: 'producto',
@@ -51,15 +51,38 @@ const productsController = {
         });
     },
 
-    async createProduct (req:Request, res:Response) {
+    async createProduct(req: Request, res: Response) {
+
+        if (!req.files || Object.keys(req.files).length === 0) {
+            return res.status(400).json({
+                ok: false,
+                message: 'debe subir una imagen'
+            });
+        }
+
+        const image:any = req.files.image;
         const productReceived = req.body;
-        if (!productReceived || Object.keys(productReceived).length < 3) {
+
+        if (!productReceived || Object.keys(productReceived).length < 2) {
             return res.status(400).json({
                 ok: false,
                 message: 'parametros incompletos'
             });
         }
+
+        image.mv('./uploads/products/image.jpg', (err:any) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    message: 'error al guardar imagen',
+                    errors: err
+                });
+            }
+        });
+
         const product = new Product(productReceived);
+        product.image = 'image.jpg';
+
         await product.save((err, newProduct) => {
             if (err) {
                 return res.status(500).json({
@@ -68,7 +91,7 @@ const productsController = {
                     errors: err
                 });
             }
-            
+
             res.status(200).json({
                 ok: true,
                 message: 'producto creado',
@@ -77,7 +100,7 @@ const productsController = {
         });
     },
 
-    async updateProduct (req:Request, res:Response){
+    async updateProduct(req: Request, res: Response) {
         const id = req.params.id;
         const productReceived = req.body;
         if (!productReceived || Object.keys(productReceived).length === 0) {
@@ -94,9 +117,9 @@ const productsController = {
                     errors: err
                 });
             }
-    
+
             const newProduct = { ...productForUpdate._doc, ...productReceived };
-    
+
             await Product.findByIdAndUpdate(id, newProduct, (err, productUpdated) => {
                 if (err) {
                     return res.status(500).json({
@@ -112,11 +135,11 @@ const productsController = {
                     new_producto: newProduct
                 });
             })
-            
+
         });
     },
 
-    async deleteProduct (req:Request, res:Response){
+    async deleteProduct(req: Request, res: Response) {
         const id = req.params.id;
         await Product.findByIdAndDelete(id, (err, productDeleted) => {
             if (err) {

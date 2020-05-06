@@ -63,14 +63,31 @@ const productsController = {
     },
     createProduct(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!req.files || Object.keys(req.files).length === 0) {
+                return res.status(400).json({
+                    ok: false,
+                    message: 'debe subir una imagen'
+                });
+            }
+            const image = req.files.image;
             const productReceived = req.body;
-            if (!productReceived || Object.keys(productReceived).length < 3) {
+            if (!productReceived || Object.keys(productReceived).length < 2) {
                 return res.status(400).json({
                     ok: false,
                     message: 'parametros incompletos'
                 });
             }
+            image.mv('./uploads/products/image.jpg', (err) => {
+                if (err) {
+                    return res.status(500).json({
+                        ok: false,
+                        message: 'error al guardar imagen',
+                        errors: err
+                    });
+                }
+            });
             const product = new products_model_1.default(productReceived);
+            product.image = 'image.jpg';
             yield product.save((err, newProduct) => {
                 if (err) {
                     return res.status(500).json({

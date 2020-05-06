@@ -2,6 +2,7 @@
 import express, {Request, Response} from 'express';
 import Product from './models/products.model';
 import productsRouter from './routes/products.routes';
+import fileUpload from 'express-fileupload';
 
 // inicializacion
 const app = express();
@@ -12,6 +13,7 @@ app.set('port', process.env.PORT || 3000);
 // middlewares
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
+app.use(fileUpload()); //fileupload
 
 // rutas
 app.get('/', (req: Request, res: Response) => {

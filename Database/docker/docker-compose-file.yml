@@ -4,7 +4,7 @@ services:
 
   mongo:
     container_name: bakeryStoreDB
-    image: bsmongoimage
+    image: mongo
     restart: on-failure
     volumes: 
       - d:/dataFromMongo/bakeryStoreData:/sharedData

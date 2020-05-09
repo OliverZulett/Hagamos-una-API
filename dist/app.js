@@ -7,6 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const products_routes_1 = __importDefault(require("./routes/products.routes"));
 const express_fileupload_1 = __importDefault(require("express-fileupload"));
+const images_routes_1 = __importDefault(require("./routes/images.routes"));
 // inicializacion
 const app = express_1.default();
 // configuraciones
@@ -21,4 +22,5 @@ app.get('/', (req, res) => {
 });
 // enrutador de productos
 app.use('/products', products_routes_1.default);
+app.use('/images', images_routes_1.default);
 exports.default = app;

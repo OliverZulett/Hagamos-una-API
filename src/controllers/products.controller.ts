@@ -38,9 +38,11 @@ const productsController = {
 
   async getProductById(req: Request, res: Response) {
     const id = req.params.id;
-    await Product.findById(id, (err, product) => {
+    await Product.findById(id, (err, product:any) => {
       if (err) return statusResponse(res, 500, "error al buscar producto", err);
-      statusResponse( res, 200, "lista de productos", null, {producto: product});
+      if (Object.keys(product).length === 0)
+        return statusResponse(res, 404, "no se encontro el producto", err);
+      statusResponse( res, 200, "productos", null, {producto: product});
     });
   },
 
@@ -119,8 +121,10 @@ const productsController = {
     const id = req.params.id;
     await Product.findByIdAndDelete(id, async (err, productDeleted: any) => {
       if (err) return statusResponse(res, 500, "error al eliminar producto", err);
-      const path = `./uploads${req.baseUrl}`;
-      await fs.remove(`${path}/${productDeleted.image}`);
+      if (productDeleted.image) {
+        const path = `./uploads${req.baseUrl}`;
+        await fs.remove(`${path}/${productDeleted.image}`);
+      }
       statusResponse( res, 200, "producto eliminado", null, {producto: productDeleted});
     });
   },

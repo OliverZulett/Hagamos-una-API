@@ -34,22 +34,16 @@ Volvemos al controlador y reemplazamos instanciamos el módulo.
 
 ### Postman
 
-una vez levantado el servidor vamos a Postman, y buscamos la petición que lista todos los productos esta se encuentra  dentro de la colección de bakery-store api dentro de la carpeta products, abro la petición y la envió, de la respuesta selecciono algún producto cuya imagen este en el servidor en mi caso yo usare la imagen de torta de cumpleaños, copio el nombre de la image y su extensión abro una nueva petición que será de tipo Get y en la url escribo http://localhost:3000/images/products/ y pego el nombre de la imagen, envió la petición y eureka la imagen se muestra, guardo esta petición presionando el boton save, le doy el nombre de mostrar imagen, selecciono la colección de Bakery-store, creo una nueva carpeta llamada images y le doy al boton save to images,
-
-### navegador
-
-finalmente podríamos verificar si la imagen se muestra en el navegador, por lo cual copiamos la url por la cual hicimos la petición, abrimos nuestro navegador favorito y pegamos la url, presionamos enter y buala la imagen se muestra.
+Finalmente probamos que todo anda bien con Postman así que realizamos un CRUD de un producto.
 
 ## Conclusiones
 
-y de esta manera es que podemos mostrar imágenes desde nuestro servidor devolviéndolas como respuestas a peticiones de clientes.
-
-Y con este video terminamos las peticiones sobre el modelo de productos pero aun nos faltan dos modelos mas que desarrollar.
+Y de esta forma vimos como crear módulos.
 
 
 ## El siguiente video
 
-Como mencionamos en el anterior video tenemos que modularizar algunas funciones a través de funciones globales que reutilizaremos en cada modelo de datos sobre los cuales realizaremos peticiones, por lo que en el próximo video veremos como crear módulos a partir de funciones que eviten que tengamos un código staguetti.
+Como vimos en el código del controlador podríamos modularizar mas funciones pero también podríamos realizar esta modularización atraves de middlewares, así que en el siguiente video veremos como crear un middlwware que valide la imagen antes de realizar la petición.
 
 ## Despedida
 

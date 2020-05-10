@@ -1,9 +1,8 @@
-import {Router} from 'express';
+import { Router } from 'express';
 import imageController from '../controllers/images.controller';
 
-const iamgesRouter = Router();
+const imageRouter = Router();
 
-// obtener imagen
-iamgesRouter.get('/:type/:image', imageController.getImage);
+imageRouter.get('/:type/:image', imageController.getImage);
 
-export default iamgesRouter;
+export default imageRouter;

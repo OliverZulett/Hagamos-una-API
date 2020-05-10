@@ -4,52 +4,33 @@ Muy buenas a todos bienvenidos otra vez a mi canal hoy continuamos con otro vide
 
 ## Introduction:
 
-en el anterior video habíamos visto cómo subir imágenes al servidor, actualizarlas y también eliminarlas, ahora nos tocaría ver la manera en la que podemos mostrarlas, ya que al momento de subir la imagen, el nombre de la imagen y su extensión se guardan en la base de datos mientras que el archivo se guarda en algún lugar en nuestro servidor, pero este archivo no puede ser accedido desde ningún lugar.
-Por lo que ahora vamos a ver la manera en la que podemos enviar esas imágenes como respuestas de peticiones. Comencemos.
+Hoy nos toca modularizar algunas funciones que estamos reutilizando para evitar que nuestros controladores tengan código spaguetti. Comencemos.
 
 ## Desarrollo
 
-### app.ts
+### controllers/products.controller.ts
 
-Lo primero que debemos hacer es crearnos un nuevo enrutador  en el app.ts ya que tendremos  imágenes tanto para usuarios como para productos.
+Si damos un vistazo al código de este controlador nos damos cuenta que tenemos dos funciones que podríamos modularizar la primera que es la función que envían respuestas a peticiones.
 
-Así que abrimos nuestro archivo app.ts nos vamos a la sección de enrutadores y declaramos un nuevo enrutador escribiendo app.use y le pasamos los parámetros de middleware que será la ruta la cual llamaremos / imagesy el enrutador imageRouter  que crearemos a continuación.
+### functions/statusResponse.function.ts
 
-###  routes/
+comenzamos creando un directorio llamado functions donde guardaremos estos módulos, y creamos la primera función que llamaremos statusResponse.function.ts, ahora si volvemos a nuestro controlador y analizamos la estructura de las respuestas que enviamos vemos que necesitamos de 5 parámetros que son: la respuesta, el código de respuesta, el mensaje de respuesta, el error si es que hay alguno y los objetos de respuesta,
 
-Ahora abrimos la carpeta router y dentro de ella creamos un archivo llamado image.routes.ts dentro de la cual primero importamos el router de express y luego declaramos una constante llamada ImageRouter que instanciara a un nuevo enrutador, luego utilizamos el método get sobre el enrutador que  devolverá  la imagen. para ello escribimos   imageRouter.get y entre paréntesis le pasamos la ruta que constara de dos parámetros, uno que será el  tipo de imagen y el segundo que será el  nombre de la imagen y escribimos /:type/:image, a continuación le pasamos el controlador de esta ruta y escribimos imageController.getImage.
-Finalmente exportamos el enrutador como modulo y escribimos export default imageRouter.
+Así que en el modulo que estamos creando escribimos la función.
 
-### controllers/
+### controllers/products.controller.ts
 
-Ahora creamos el controlador que nos devolverá la imagen del servidor para ello nos vamos a la carpeta controllers y creamos un archivo llamado images.controller.ts dentro del cual crearemos una constante  llamada imagecontroller que será un objeto que contendrá los controladores de la imagen. 
+una vez escrita la función volvemos los controlador y reemplazamos las respuesta por el modulo.
 
-Dentro del objeto creamos una función asíncrona que devolverá la imagen. escribimos async getImage y entre paréntesis le pasamos el req que será de tipo request coma el res que será de tipo response importamos los modulos request y response.
-dentro de esta función tenemos que obtener el tipo de imagen y el nombre de la misma, entonces declaramos una constante llama type  igual a req.paramas.type y otra constante llamada image que será igual a req.params.image. También tenemos que encontrar la ubicación de la imagen por lo cual importamos el modulo path de node y escribimos import path from 'path', declaramos una constante llamada pathImage que instanciara el path y utilizaremos su funcion .resolve que lo que hace es encontrar el path de nuestra API dentro del servidor y entre paréntesis le pasamos el atributo dirname seguido de la ruta de la carpeta que contiene las imágenes dentro de la API y escribimos con templates literales ../../uploads/${types}/${image} antes de especificarle el path e la carpeta upload subo dos niveles ya que al transpilar el código de typescript este archivo se encontrara en la ruta dist/controllers pero la carpeta uploads esta en la raiz de la API por lo que tengo que subir dos niveles para encontrar la imagen.
-Ahora importamos el mudulo de fs-extra y escribimos import fs from 'fs-extra' y realizamos una validación escribiendo if entre paréntesis await e instanciamos la función fs.existsSync y entre paréntesis pathImage que lo que hará será comprobar si en verdad existe la imagen en el path que especificamos, de ser asi enviamos una respuesta con la imagen y escribimos res.sendFile y entre paréntesis le pasamos el pathImage, lo cual mostrara la imagen como respuesta a la petición de nuestros clientes.
+Volviendo a revisar el controlador también seria buena idea modularizar la función de guardar la imagen luego de validarla.
 
-### uploads
+### functions/saveFile.function.ts
 
-Ahora tenemos que pensar que pasaría si por algún motivo esta imagen se pierde en el servidor, entonces esta petición solo devolvería un error y para evitar eso seria bueno tener una imagen por defecto que devolver en caso de que la imagen solicitada no este disponible.
-yo tengo una imagen por defecto que descargue previamente llamada no-image.png la cual voy a copiar en la carpeta uploads. 
+Así que creamos el modulo para guardar archivos vamos a la carpeta functions y creamos la función saveFile dentro creamos la función.
 
-### controllers/images.controller.ts
+### controllers/products.controller.ts
 
-ahora volvemos a completar la validación en el controlador de la imagen y escribo else  entre corchetes declaro una nueva constante llamada pathNoImage que será igual a part.resolve y ente parentesis le paso el dirname seguido de la ruta de la imagen por defecto que será ../../uploads/no-image.png. finalmente enviamos la respuesta y escribo res.sendFile y entre paréntesis pathNoImage.
-
-para terminar exporto este controlador como modulo y escribo export default imageController.
-
-### app.ts
-
-Volvemos al app.ts para importar el enrutador y escribimos import imagesRouter from './router/images.routes'.
-
-###  routes/images.routes.ts
-
-vamos al enrutador e importamos el controlador y escribimos import imageController from '../controllers/images.controller'.
-
-### execute
-
-ahora tenemos que transpilar el código y levantar el servidor así que abro la terminar y escribo npm run dev y esperamos ... 
+Volvemos al controlador y reemplazamos instanciamos el módulo.
 
 ### Postman
 

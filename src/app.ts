@@ -1,8 +1,8 @@
 // importaciones
 import express, {Request, Response} from 'express';
 import productsRouter from './routes/products.routes';
-import iamgesRouter from './routes/images.routes';
 import fileUpload from 'express-fileupload';
+import imageRouter from './routes/images.routes';
 
 // inicializacion
 const app = express();
@@ -13,7 +13,7 @@ app.set('port', process.env.PORT || 3000);
 // middlewares
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
-app.use(fileUpload()); //fileupload
+app.use(fileUpload());
 
 // rutas
 app.get('/', (req: Request, res: Response) => {
@@ -22,7 +22,6 @@ app.get('/', (req: Request, res: Response) => {
 
 // enrutador de productos
 app.use('/products', productsRouter);
-// enrutador de imagenes
-app.use('/images', iamgesRouter);
+app.use('/images', imageRouter);
 
 export default app;

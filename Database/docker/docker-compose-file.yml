@@ -3,11 +3,14 @@ version: '3.7'
 services:
 
   mongo:
+    # el uso de la imagen bakeryStoreDB es opcional simplemente
+    # se podria usar la imagen oficial de mongo
     container_name: bakeryStoreDB
     image: mongo
     restart: on-failure
     volumes: 
-      - d:/dataFromMongo/bakeryStoreData:/sharedData
+      # puedes cambiar d:/dataFromMongo con cualquier path de tu servidor
+      - d:/dataFromMongo/bakeryStoreData:/sharedData 
       - volume1:/data/db
     command: [--auth]
     ports:

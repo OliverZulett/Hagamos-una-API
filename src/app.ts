@@ -3,6 +3,7 @@ import express, {Request, Response} from 'express';
 import productsRouter from './routes/products.routes';
 import fileUpload from 'express-fileupload';
 import imageRouter from './routes/images.routes';
+import usersRouter from './routes/users.routes';
 
 // inicializacion
 const app = express();
@@ -22,6 +23,7 @@ app.get('/', (req: Request, res: Response) => {
 
 // enrutador de productos
 app.use('/products', productsRouter);
+app.use('/users', usersRouter);
 app.use('/images', imageRouter);
 
 export default app;

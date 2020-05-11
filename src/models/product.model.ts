@@ -24,7 +24,6 @@ const productSchema = new Schema(
         price: {
             type: Number,
             required: true,
-            lowercase: true,
             trim: true
         },
         ingredients: {

@@ -4,90 +4,91 @@ Muy buenas a todos bienvenidos otra vez a mi canal hoy continuamos con otro vide
 
 ## Introducción:
 
-En el video de hoy veremos como crear un middleware, un middleware en síntesis es una función que se ejecuta antes de realizar operaciones dentro de una petición y vienen bien para realizar validaciones. 
-
-Así que hoy escribiremos un middleware que verifique que los archivos que subimos al servidor al memento de crear un nuevo producto sean de tipo imagen, genere un nombre de archivo, que obtenga su extensión y la ruta donde guardara el archivo.
+Ahora que ya tenemos la estructura base completada es momento de realizar las peticiones de los modelos de datos restantes, asi que hoy comenzaremos con el modelo de datos de usuarios.
 
 Comencemos.
 
 ## Desarrollo
 
-### middlewares
+### models/user.model.ts
 
-Primero creamos el folder que contendrá todos nuestros middlewares de aquí en adelante:
+Lo primero que tenemos que hacer es crear el modelo de datos de usuarios para lo cual tenemos que obtenemos los parametros o campos que necesitaremos para guardar a los usuarios en la base de datos, estos parametros los obtendremos de la lista de requerimientos y podriamos reutilizar algo de código del modelo de datos de productos.
 
-`creamos  la carpeta middlewares` 
+`creamos el modelo de datos de usuarios` 
 
-ahora creamos nuestro primer middleware llamado:
+`obtenemos los parametro que necesitamos de la lista de requerimientos`
 
-`imageValidator.middleware.ts`
+`reutilizamos codigo del modelo de productos`
 
-### middlewares/imageValidator.middleware.ts
+Ahora si bien necesitamos parametros adicionales como el nit el numero de telefono o la direccion, tenemos que tener en cuenta que estos parametros podrian varias por pedido ya que quiza un cliente haga un pedido para otra persona por lo que su nit y direccion sean diferentes al del mismo usuario. asi que deberian setearse parametros nuevos en cada pedido pero desde el front end y para no tener que re ingresar los datos cada vez se podria utilizar el local storage desde el front end.
 
-dentro del middleware nos creamos la función que validara los parámetro del los archivos que se suban al servidor pero ya que es un proceso similar al que tenemos escrito en el controlador de producto pues re utilizamos código:
+### routes/users.routes.ts
 
-`reutilizamos el codigo que valida la imagen y agregamos el código que falte`
+Ahora creamos la estructura del enrutador que gestionara las peticiones cuya estructura sera similar al enrutador de productos por lo cual reutilizamos algo de codigo:
 
-### controllers/products.controller.ts
+`creamos un nuevo enrutador en /routes llamado users.routes.ts`
 
-Una vez creado el middleware debemos modificar la lógica en la que se guardaba la imagen anteriormente:
+### controllers/users.controller.ts
 
-`modificamos el código que guardaba la imagen`
+Una vez creado el enrutador procedemos a crear el controlador de usuarios que realizara las operaciones CRUD, tambien nos basaremos en la estructura del controlador de productos para crear este controlador
 
-### functions/saveFile.function.ts
+`creamos un nuevo controlador en /controllers llamado users.controllers.ts`
 
-Y también podríamos modificar la función de guardar archivo para hacer esto de manera mas dinámica y en vez de pasarle tantos parámetros simplemente le pasamos el parámetro ***req*** y ***res*** ya que en en el ***req*** donde ahora se encuentran parámetros como el nombre del archivo y el ***path*** donde guardaremos la imagen:
+y adaptamos el codigo del controlador de productos.
 
-`modificamos el código que guardaba la imagen`
+`reutilizamos el código el controlador de productos`
 
-### routes/products.routes.ts
+**Consideraciones**
 
-Una vez creado el middleware, modificado el controlador y modificado el modulo que guardara la imagen inyectamos el middleware en el enrutador que instancie la petición ***POST***:
+* ***createUSer*** tenemos que considerar que al momento de crear usuarios tenemos que verificar que realmente nos pasen dos parametros que son el email y la contraseña" ademas que esta deberemos de encriptarla para mas seguridad por lo que instalamos un modulo de node llamado ***bcrypt***
+  
+`instalamos bcrypt y su tipado de datos`
 
-`inyectamos el middleware`
+* encripttamos la contraseña
+* ***getUserBiId*** ocultamos la contraseña al devolver el usuario
+
+
+### routes/users.routes.ts
+
+Una vez terminado el controlador ahora lo importamos en el enrutador
+
+### app.ts
+
+y luego importamos el enrutador en el app.ts
+
+### assets/
+
+Ahora que ya vamos a tener dos tipos imagenes las de productos y las de usuarios, seria ideal setear una imagen por defecto para cada uno y estas iran dentro de una carpeta llamada assets dentro de la carpeta src ya que por lo general toda carpeta que no sea ni src o dist se sube al servidor ya que la carpeta uploads deberia crearse con el primer producto o usuario que creemos.
+
+`creamos la carpeta assets`
+
+dentro de la carpeta assets copio una imagen por defecto para usuarios y productos
+
+`copio imagenes por defecto`
+
+tambien deberemos crear un comando en el packeje.json que nos permita copiar la carpeta de assets dentro de la carpeta dist ya que al momento de crearse la carpeta dist luego de transpilarse el codigo a js no tomara en cuenta la carpeta assets por que no contiene codigo typescript.
+
+`creamos un comando en el packege.json` 
+
+### controllers/image.controller.ts
+
+ahora modificamos el controlador de imagenes para validar cuando debera usar uno u otra.
+
+`modificamos el controlador de imagenes`
 
 ### Postman
 
-Finalmente probamos que todo anda bien con ***Postman*** así que creamos un nuevo producto y además verificamos en que casos fallaría el middleware y vemos como responde nuestra API.
+Finalmente levantamos el servidor y probamos las operaciones CRUD sobre el modelo de usuarios en ***Postman***
 
-### middlewares/imageValidator.middleware.ts
-
-Ahora tenemos que modificar nuestro middleware para que pueda funcionar cuando actualizamos productos y no solo cuando los creamos.
-
-Para ello utilizaremos el método ___res.method___ que verificara que tipo de petición estamos recibiendo y sabiendo que tipo de petición es podremos diferenciar si vamos a dejar la petición sin importar si haya o no una imagen ósea cada que envíen peticiones ***PUT***. 
-
-`agregamos la validacion del metodo de petición`
-
-### functions/updateFile.function.ts
-
-También debemos crearnos un modulo que nos permita actualizar imágenes teniendo en cuenta eventos como que pasaría si la imagen del servidor esta corrupta o no existe, este modulo sera similar al que guarda imagen por lo que podríamos reutilizar algo de código.
-
-`Creamos el update file y reutilizamos codigo del saveFile` 
-
-### controllers/products.controller.ts
-
-Ahora modificaremos el método ***updateProduct*** del controlador de productos para que actualice las imágenes por el modulo de ***updateImage***:
-
-`modificamos el código que actualizaba la imagen`
-
-### routes/products.routes.ts
-
-Una vez creado el middleware, modificado el controlador y modificado el modulo que actualizara la imagen inyectamos el middleware en el enrutador que instancie la petición ***PUT***:
-
-`inyectamos el middleware en el metodo PUT`
-
-### Postman
-
-Finalmente probamos que todo anda bien con ***Postman*** así que actualizamos un producto y además verificamos en que casos fallaría el middleware y vemos como responde nuestra API.
+`creamos una nueva carpeta en postman que guardara todas las peticiones de usuarios`
 
 ## Conclusiones
 
-Y de esta forma vimos como crear un middleware, como inyectarlo en un enrutador y convertimos mas de 200 líneas de código en menos de 100.
-
+Y de esta forma creamos las peticiones al modelo de datos de usuarios.
 
 ## El siguiente video
 
-Y con este video ya creamos la estructura base completa de nuestra API ahora solo nos quedan crear los modelos, enrutadores y controladores de las demás entidades tarea que se nos facilitara enormemente ahora que tenemos un código mas funcional y simplificado gracias a los módulos y a los middlewares.
+En el siguiente video crearemos el modelo de datos y las peticiones para ordenes.
 
 ## Despedida
 

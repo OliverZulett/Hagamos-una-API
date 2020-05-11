@@ -4,7 +4,8 @@ import config from './config/config';
 const dbOptions: ConnectionOptions = {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useFindAndModify: false
+    useFindAndModify: false,
+    useCreateIndex: true
 }
 
 mongoose.connect( process.env.MONGO_DB_URL || config.DB.LOCAL_DB, dbOptions);

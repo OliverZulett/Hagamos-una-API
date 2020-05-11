@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import Product from "../models/product.model";
-import { v4 as uuidv4 } from "uuid";
 import fs from "fs-extra";
 import { statusResponse } from '../functions/statusResponse.function';
 import saveFile from "../functions/saveFile.function";
@@ -88,7 +87,7 @@ const productsController = {
 
       await Product.findByIdAndUpdate(id, newProduct, (err, productUpdated) => {
         if (err) return statusResponse(res, 500, "error al actualizar producto", err);
-        statusResponse( res, 200, "producto actualizado", null, {old_product: productUpdated,new_producto: newProduct});
+        statusResponse( res, 200, "producto actualizado", null, {old_product: productUpdated,new_product: newProduct});
       });
     });
   },

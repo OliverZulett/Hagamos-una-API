@@ -4,91 +4,47 @@ Muy buenas a todos bienvenidos otra vez a mi canal hoy continuamos con otro vide
 
 ## Introducción:
 
-Ahora que ya tenemos la estructura base completada es momento de realizar las peticiones de los modelos de datos restantes, asi que hoy comenzaremos con el modelo de datos de usuarios.
+Hoy terminamos con las peticiones a modelos y terminaremos con el modelo de datos para las ordenes de productos.
 
 Comencemos.
 
 ## Desarrollo
 
-### models/user.model.ts
+### models/order.model.ts
 
-Lo primero que tenemos que hacer es crear el modelo de datos de usuarios para lo cual tenemos que obtenemos los parametros o campos que necesitaremos para guardar a los usuarios en la base de datos, estos parametros los obtendremos de la lista de requerimientos y podriamos reutilizar algo de código del modelo de datos de productos.
+comenzamos creando el modelo de datos.
 
-`creamos el modelo de datos de usuarios` 
+`creamos el modelo de datos de order.model.ts` 
 
-`obtenemos los parametro que necesitamos de la lista de requerimientos`
+### routes/orders.routes.ts
 
-`reutilizamos codigo del modelo de productos`
+una vez que creamos el modelo de datos creamos el enrutador que gestionara las peticiones.
 
-Ahora si bien necesitamos parametros adicionales como el nit el numero de telefono o la direccion, tenemos que tener en cuenta que estos parametros podrian varias por pedido ya que quiza un cliente haga un pedido para otra persona por lo que su nit y direccion sean diferentes al del mismo usuario. asi que deberian setearse parametros nuevos en cada pedido pero desde el front end y para no tener que re ingresar los datos cada vez se podria utilizar el local storage desde el front end.
-
-### routes/users.routes.ts
-
-Ahora creamos la estructura del enrutador que gestionara las peticiones cuya estructura sera similar al enrutador de productos por lo cual reutilizamos algo de codigo:
-
-`creamos un nuevo enrutador en /routes llamado users.routes.ts`
-
-### controllers/users.controller.ts
-
-Una vez creado el enrutador procedemos a crear el controlador de usuarios que realizara las operaciones CRUD, tambien nos basaremos en la estructura del controlador de productos para crear este controlador
-
-`creamos un nuevo controlador en /controllers llamado users.controllers.ts`
-
-y adaptamos el codigo del controlador de productos.
-
-`reutilizamos el código el controlador de productos`
-
-**Consideraciones**
-
-* ***createUSer*** tenemos que considerar que al momento de crear usuarios tenemos que verificar que realmente nos pasen dos parametros que son el email y la contraseña" ademas que esta deberemos de encriptarla para mas seguridad por lo que instalamos un modulo de node llamado ***bcrypt***
-  
-`instalamos bcrypt y su tipado de datos`
-
-* encripttamos la contraseña
-* ***getUserBiId*** ocultamos la contraseña al devolver el usuario
-
-
-### routes/users.routes.ts
-
-Una vez terminado el controlador ahora lo importamos en el enrutador
+`creamos el modelo de datos de orders.routes.ts` 
 
 ### app.ts
 
-y luego importamos el enrutador en el app.ts
+Ahora que tenemos el enrutador lo instanciamos en el app.ts
 
-### assets/
+### controllers/orders.controller.ts
 
-Ahora que ya vamos a tener dos tipos imagenes las de productos y las de usuarios, seria ideal setear una imagen por defecto para cada uno y estas iran dentro de una carpeta llamada assets dentro de la carpeta src ya que por lo general toda carpeta que no sea ni src o dist se sube al servidor ya que la carpeta uploads deberia crearse con el primer producto o usuario que creemos.
-
-`creamos la carpeta assets`
-
-dentro de la carpeta assets copio una imagen por defecto para usuarios y productos
-
-`copio imagenes por defecto`
-
-tambien deberemos crear un comando en el packeje.json que nos permita copiar la carpeta de assets dentro de la carpeta dist ya que al momento de crearse la carpeta dist luego de transpilarse el codigo a js no tomara en cuenta la carpeta assets por que no contiene codigo typescript.
-
-`creamos un comando en el packege.json` 
-
-### controllers/image.controller.ts
-
-ahora modificamos el controlador de imagenes para validar cuando debera usar uno u otra.
-
-`modificamos el controlador de imagenes`
+Ahora comenzamos con la creacion del controlador de las peticiones para las ordenes.
 
 ### Postman
 
-Finalmente levantamos el servidor y probamos las operaciones CRUD sobre el modelo de usuarios en ***Postman***
+Finalmente levantamos el servidor y probamos las operaciones CRUD sobre el modelo de pedidos en ***Postman***
 
 `creamos una nueva carpeta en postman que guardara todas las peticiones de usuarios`
 
 ## Conclusiones
 
-Y de esta forma creamos las peticiones al modelo de datos de usuarios.
+Y de esta forma creamos las peticiones al modelo de datos de pedidos, vimos como embeber documentos y filtrar datos por consultas.
 
 ## El siguiente video
 
-En el siguiente video crearemos el modelo de datos y las peticiones para ordenes.
+Y con esto podriamos dar por terminado la creacion basica de una API pero si es que fueron un poco perseptivos se daran cuenta que esta API no tiene preteccion alguna que nos asegure la integridad de los datos ya que si subiriamos esta API a cualquier servidor o servicio en la nube cualquier persona con un programa parecido a postman o desde cualquier navegador web podria acceder a nuestra API y ejecutar procesos CRUD sobre cualquier modelo de datos y por ende corromper la integridad de nuestra vase de datos.
+
+Es por eso que en el siguiente video nos eseguraremos que nuestra API mantenga la integridad de los datos a travez de JWT.
 
 ## Despedida
 

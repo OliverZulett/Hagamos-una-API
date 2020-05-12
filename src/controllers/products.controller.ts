@@ -10,37 +10,18 @@ const productsController = {
 
     await Product.find({}, "name image price", async (err, products) => {
       if (err) return statusResponse(res, 500, "error al buscar productos", err);
-      // {
-      //   return res.status(500).json({
-      //     ok: false,
-      //     message: "error al buscar productos",
-      //     errors: err,
-      //   });
-      // }
       await Product.countDocuments((err, total) => {
         if (err) return statusResponse(res, 500, "error al contar productos", err);
-        // {
-        //   return res.status(500).json({
-        //     ok: false,
-        //     message: "error al contar productos",
-        //     errors: err,
-        //   });
-        // }
         statusResponse( res, 200, "lista de productos", null, {productos: products, total_productos: total});
-        // res.status(200).json({
-        //   ok: true,
-        //   message: "lista de productos",
-        //   productos: products,
-        //   total_productos: total
-        // });
       });
     });
+
   },
 
   async getProductById(req: Request, res: Response) {
     const id = req.params.id;
     await Product.findById(id, (err, product:any) => {
-      if (err) return statusResponse(res, 500, "error al buscar producto", err);
+      if (err || product === null) return statusResponse(res, 500, "error al buscar producto", err);
       if (Object.keys(product).length === 0)
         return statusResponse(res, 404, "no se encontro el producto", err);
       statusResponse( res, 200, "productos", null, {producto: product});
@@ -77,7 +58,7 @@ const productsController = {
     }
 
     await Product.findById(id, async (err, productForUpdate: any) => {
-      if (err) return statusResponse(res, 500, "error al encontrar producto", err);
+      if (err || productForUpdate === null) return statusResponse(res, 500, "error al encontrar producto", err);
       const newProduct = { ...productForUpdate._doc, ...productReceived };
 
       if (req.files && Object.keys(req.files).length !== 0) {
@@ -86,21 +67,27 @@ const productsController = {
       }
 
       await Product.findByIdAndUpdate(id, newProduct, (err, productUpdated) => {
-        if (err) return statusResponse(res, 500, "error al actualizar producto", err);
+        if (err || productUpdated === null) return statusResponse(res, 500, "error al actualizar producto", err);
         statusResponse( res, 200, "producto actualizado", null, {old_product: productUpdated,new_product: newProduct});
       });
     });
   },
 
   async deleteProduct(req: Request, res: Response) {
+
     const id = req.params.id;
+
     await Product.findByIdAndDelete(id, async (err, productDeleted: any) => {
-      if (err) return statusResponse(res, 500, "error al eliminar producto", err);
+
+      if (err || productDeleted === null) return statusResponse(res, 500, "error al eliminar producto", err);
+      
       if (productDeleted.image) {
         const path = `./uploads${req.baseUrl}`;
         await fs.remove(`${path}/${productDeleted.image}`);
       }
+    
       statusResponse( res, 200, "producto eliminado", null, {producto: productDeleted});
+
     });
   },
 };

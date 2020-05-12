@@ -20,7 +20,7 @@ const usersController = {
   async getUserById(req: Request, res: Response) {
     const id = req.params.id;
     await User.findById(id, (err, user:any) => {
-      if (err) return statusResponse(res, 500, "error al buscar usuario", err);
+      if (err || user === null) return statusResponse(res, 500, "error al buscar usuario", err);
       if (Object.keys(user).length === 0)
         return statusResponse(res, 404, "no se encontro el usuario", err);
       statusResponse( res, 200, "usuarios", null, {usuario: user});
@@ -53,7 +53,7 @@ const usersController = {
       return statusResponse(res, 400, "Nada que actualizar", {err: "Nada que actualizar"});
     }
     await User.findById(id, async (err, userForUpdate: any) => {
-      if (err) return statusResponse(res, 500, "error al encontrar usuario", err);
+      if (err || userForUpdate === null) return statusResponse(res, 500, "error al encontrar usuario", err);
 
       const newUser = { ...userForUpdate._doc, ...userReceived };
       
@@ -62,7 +62,7 @@ const usersController = {
         newUser.image = (<any>req).imageName;
       }
       await User.findByIdAndUpdate(id, newUser, (err, userUpdated) => {
-        if (err) return statusResponse(res, 500, "error al actualizar usuario", err);
+        if (err || userForUpdate === null) return statusResponse(res, 500, "error al actualizar usuario", err);
         statusResponse( res, 200, "usuario actualizado", null, {old_user: userUpdated, new_user: newUser});
       });
     });
@@ -71,7 +71,7 @@ const usersController = {
   async deleteUser(req: Request, res: Response) {
     const id = req.params.id;
     await User.findByIdAndDelete(id, async (err, userDeleted: any) => {
-      if (err) return statusResponse(res, 500, "error al eliminar usuario", err);
+      if (err || userDeleted === null) return statusResponse(res, 500, "error al eliminar usuario", err);
       if (userDeleted.image) {
         const path = `./uploads${req.baseUrl}`;
         await fs.remove(`${path}/${userDeleted.image}`);

@@ -30,7 +30,7 @@ const ordersController = {
       .populate("products.product", "name image")
       .exec((err, order: any) => {
 
-        if (err) return statusResponse(res, 500, "error al buscar pedido", err);
+        if (err || order === null) return statusResponse(res, 500, "error al buscar pedido", err);
 
         if (!order || Object.keys(order).length === 0)
           return statusResponse(res, 404, "no se encontro el pedido", err);
@@ -49,7 +49,7 @@ const ordersController = {
       });
 
     await User.findById(user_id, async (err, user: any) => {
-      if (err) return statusResponse(res, 500, "error al buscar usuario", err);
+      if (err || user === null) return statusResponse(res, 500, "error al buscar usuario", err);
 
       if (Object.keys(user).length === 0)
         return statusResponse(res, 404, "no se encontro el usuario", err);
@@ -58,7 +58,7 @@ const ordersController = {
       const order = new Order(orderReceived);
 
       await order.save((err, newOrder) => {
-        if (err)
+        if (err || newOrder === null)
           return statusResponse(res, 500, "error al guardar pedido", err);
         statusResponse(res, 200, "pedido creado", null, { pedido: newOrder });
       });
@@ -76,16 +76,16 @@ const ordersController = {
     }
 
     await Order.findById(id, async (err, orderForUpdate: any) => {
-      if (err)
+      if (err || orderForUpdate === null)
         return statusResponse(res, 500, "error al encontrar pedido", err);
 
       const newOrder = { ...orderForUpdate._doc, ...orderReceived };
 
-      await Order.findByIdAndUpdate(id, newOrder, (err, productUpdated) => {
-        if (err)
+      await Order.findByIdAndUpdate(id, newOrder, (err, orderUpdated) => {
+        if (err || orderUpdated === null)
           return statusResponse(res, 500, "error al actualizar pedido", err);
         statusResponse(res, 200, "pedido actualizado", null, {
-          old_product: productUpdated,
+          old_product: orderUpdated,
           new_product: newOrder,
         });
       });
@@ -95,7 +95,7 @@ const ordersController = {
   async deleteOrder(req: Request, res: Response) {
     const id = req.params.id;
     await Order.findByIdAndDelete(id, async (err, orderDeleted: any) => {
-      if (err) return statusResponse(res, 500, "error al eliminar pedido", err);
+      if (err || orderDeleted === null) return statusResponse(res, 500, "error al eliminar pedido", err);
 
       statusResponse(res, 200, "pedido eliminado", null, {
         pedido: orderDeleted,

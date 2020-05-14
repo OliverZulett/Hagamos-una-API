@@ -51,8 +51,7 @@ const productsController = {
     const productReceived = req.body;
     
     if (
-      (!productReceived || Object.keys(productReceived).length === 0) &&
-      (!req.files || Object.keys(req.files).length === 0)
+      (!productReceived || Object.keys(productReceived).length === 0) && !(<any>req).imageExist
     ) {
       return statusResponse(res, 400, "Nada que actualizar", {err: "Nada que actualizar"});
     }
@@ -61,7 +60,7 @@ const productsController = {
       if (err || productForUpdate === null) return statusResponse(res, 500, "error al encontrar producto", err);
       const newProduct = { ...productForUpdate._doc, ...productReceived };
 
-      if (req.files && Object.keys(req.files).length !== 0) {
+      if ((<any>req).imageExist) {
         await updateFile(req, res, newProduct.image);
         newProduct.image = (<any>req).imageName;
       }

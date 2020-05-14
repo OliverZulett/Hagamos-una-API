@@ -47,8 +47,7 @@ const usersController = {
     const id = req.params.id;
     const userReceived = req.body;
     if (
-      (!userReceived || Object.keys(userReceived).length === 0) &&
-      (!req.files || Object.keys(req.files).length === 0)
+      (!userReceived || Object.keys(userReceived).length === 0) && !(<any>req).imageExist
     ) {
       return statusResponse(res, 400, "Nada que actualizar", {err: "Nada que actualizar"});
     }
@@ -57,7 +56,7 @@ const usersController = {
 
       const newUser = { ...userForUpdate._doc, ...userReceived };
       
-      if (req.files && Object.keys(req.files).length !== 0) {
+      if ((<any>req).imageExist) {
         await updateFile(req, res, newUser.image);
         newUser.image = (<any>req).imageName;
       }

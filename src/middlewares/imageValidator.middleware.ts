@@ -28,6 +28,7 @@ export default function imageValidator(req: Request, res: Response, next: NextFu
     (<any>req).pathToSaveImage = path;
     (<any>req).imageName = fileName;
     (<any>req).imageExtention = fileExtension;
+    (<any>req).imageExist = true;
     
   } else
     return statusResponse(res, 400, "el archivo no es una imagen", {err: "el archivo no es una imagen"});

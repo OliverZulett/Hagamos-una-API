@@ -1,5 +1,4 @@
 /node_modules
 /dist
-/uploads/products
-/uploads/users
-README.md
+/uploads
+package-lock.json

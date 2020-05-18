@@ -6,7 +6,7 @@ services:
     # el uso de la imagen bakeryStoreDB es opcional simplemente
     # se podria usar la imagen oficial de mongo
     container_name: bakeryStoreDB
-    image: bsmongoimage
+    image: mongo
     restart: on-failure
     volumes: 
       # puedes cambiar d:/dataFromMongo con cualquier path de tu servidor

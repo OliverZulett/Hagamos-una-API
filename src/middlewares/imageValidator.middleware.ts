@@ -3,9 +3,6 @@ import { statusResponse } from "../functions/statusResponse.function";
 import { v4 as uuidv4 } from "uuid";
 
 export default function imageValidator(req: Request, res: Response, next: NextFunction) {
-  
-  // if (!req.files || Object.keys(req.files).length === 0)
-  //   return statusResponse(res, 400, "debe subir una imagen", {err: "debe subir una imagen"});
 
   if (!req.files || Object.keys(req.files).length === 0) {
     if (req.method === 'POST') {

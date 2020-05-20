@@ -32,8 +32,6 @@ const usersController = {
     if (!userReceived || Object.keys(userReceived).length < 2) {
       return statusResponse(res, 400, "parametros incompletos", {err: "parametros incompletos"});
     }
-
-    // userReceived.password = bcrypt.hashSync(userReceived.password, 10);
     
     const user = new User(userReceived);
 

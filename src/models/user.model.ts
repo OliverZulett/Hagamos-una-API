@@ -50,14 +50,13 @@ const userSchema = new Schema(
 );
 
 // cifrado
-// cunado decimos pre esta funcion se va a ejecutar antes en la peticion
 userSchema.pre<IUser>("save", async function (next) {
   const user = this;
   if (!user.isModified("password")) return next();
-  const salt = await bcrypt.genSalt(10); //cuantas veces va a encriptar
-  const hash = await bcrypt.hash(user.password, salt); //contraseña cifrada
+  const salt = await bcrypt.genSalt(10);
+  const hash = await bcrypt.hash(user.password, salt);
   user.password = hash;
-  next(); //el next continua con el codigo es como el return
+  next();
 });
 
 userSchema.methods.comparePassword = async function (

@@ -8,7 +8,7 @@ import bcrypt from 'bcrypt';
 const usersController = {
 
   async userList(req: Request, res: Response) {
-    await User.find({}, "nick image", async (err, users) => {
+    await User.find({}, "nick image email", async (err, users) => {
       if (err) return statusResponse(res, 500, "error al buscar usuarios", err);
       await User.countDocuments((err, total) => {
         if (err) return statusResponse(res, 500, "error al contar usuarios", err);

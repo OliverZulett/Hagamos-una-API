@@ -7,7 +7,7 @@ import adminAuthMiddleware from '../middlewares/adminAuth.middleware';
 const usersRouter = Router();
 
 // lista de usuarios
-usersRouter.get('/',passport.authenticate('jwt', {session: false}), usersController.userList);
+usersRouter.get('/',passport.authenticate('jwt', {session: false}), adminAuthMiddleware, usersController.userList);
 // obtener un usuario por su id
 usersRouter.get('/:id',passport.authenticate('jwt', {session: false}), usersController.getUserById);
 // crea un nuevo usuario

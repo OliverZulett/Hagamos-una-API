@@ -1,5 +1,4 @@
 import { Schema, model, Document } from 'mongoose';
-import moment_timezone from 'moment-timezone';
 
 export interface IOrder extends Document {
     user_id: string;
@@ -14,8 +13,6 @@ export interface IOrder extends Document {
     adress: string;
     notes: string;
 }
-
-const dateLaPaz = moment_timezone.tz(Date.now(), "America/La_Paz").format();
 
 const orderSchema = new Schema(
     {
@@ -65,7 +62,7 @@ const orderSchema = new Schema(
         order_date: {
             type: Date,
             required: true,
-            default: dateLaPaz
+            default: Date.now()
         },
         phone: {
             type: Number,

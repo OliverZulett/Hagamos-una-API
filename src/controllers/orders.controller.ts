@@ -9,13 +9,13 @@ const ordersController = {
       .sort('order_date')
       .populate("user", "nick image")
       .populate("products.product", "name image")
-      .exec( async (err, products) => {
+      .exec( async (err, orders) => {
       if (err) return statusResponse(res, 500, "error al buscar pedidos", err);
       await Order.countDocuments((err, total) => {
         if (err)
           return statusResponse(res, 500, "error al contar pedidos", err);
         statusResponse(res, 200, "lista de pedidos", null, {
-          pedidos: products,
+          pedidos: orders,
           total_pedidos: total,
         });
       });
@@ -96,7 +96,6 @@ const ordersController = {
     const id = req.params.id;
     await Order.findByIdAndDelete(id, async (err, orderDeleted: any) => {
       if (err || orderDeleted === null) return statusResponse(res, 500, "error al eliminar pedido", err);
-
       statusResponse(res, 200, "pedido eliminado", null, {
         pedido: orderDeleted,
       });

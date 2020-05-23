@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import User, { IUser } from "../models/user.model";
+import User from "../models/user.model";
 import createToken from "../functions/createToken.function";
 import { statusResponse } from '../functions/statusResponse.function';
 
@@ -41,12 +41,14 @@ export const singIn = async (req: Request, res: Response) => {
 
   if (!isMatch) {
     return statusResponse(res, 400, "login incorrecto", {
-      err: "the email or password are incorrect",
+      err: "el email o el password son incorrectos",
     });
   }
+
   createToken(user).then((tkn) => {
     statusResponse(res, 400, "login correcto", null, { token: tkn });
   }).catch( err => {
     return statusResponse(res, 500, 'error al crear token', err);
   });
+
 };

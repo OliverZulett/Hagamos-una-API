@@ -5,15 +5,15 @@ import adminAuthMiddleware from '../middlewares/adminAuth.middleware';
 
 const ordersRouter = Router();
 
-// lista de ordenes
+// lista todas las ordenes
 ordersRouter.get('/', passport.authenticate('jwt', {session: false}), adminAuthMiddleware, ordersController.orderList);
-// obtener un ordenes por su id
-ordersRouter.get('/:id',passport.authenticate('jwt', {session: false}), ordersController.getOrderById);
-// crea un nuevo ordenes
-ordersRouter.post('/:user_id', passport.authenticate('jwt', {session: false}), ordersController.createOrder);
-// actualiza un ordenes
-ordersRouter.put('/:id', passport.authenticate('jwt', {session: false}), ordersController.updateOrder);
-// // elimina un ordenes
-ordersRouter.delete('/:id', passport.authenticate('jwt', {session: false}), ordersController.deleteOrder);
+// obtiene una orden por su id
+ordersRouter.get('/:id',passport.authenticate('jwt', {session: false}), adminAuthMiddleware, ordersController.getOrderById);
+// crea una nueva orden 
+ordersRouter.post('/:user_id', passport.authenticate('jwt', {session: false}), adminAuthMiddleware, ordersController.createOrder);
+// actualiza una orden por su id
+ordersRouter.put('/:id', passport.authenticate('jwt', {session: false}), adminAuthMiddleware, ordersController.updateOrder);
+// elimina una orden por su id
+ordersRouter.delete('/:id', passport.authenticate('jwt', {session: false}), adminAuthMiddleware, ordersController.deleteOrder);
 
 export default ordersRouter;

@@ -3,7 +3,6 @@ import User from "../models/user.model";
 import fs from "fs-extra";
 import { statusResponse } from '../functions/statusResponse.function';
 import updateFile from "../functions/updateFile.function";
-import bcrypt from 'bcrypt';
 
 const usersController = {
 

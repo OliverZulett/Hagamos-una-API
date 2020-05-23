@@ -9,12 +9,12 @@ const usersRouter = Router();
 // lista de usuarios
 usersRouter.get('/',passport.authenticate('jwt', {session: false}), adminAuthMiddleware, usersController.userList);
 // obtener un usuario por su id
-usersRouter.get('/:id',passport.authenticate('jwt', {session: false}), usersController.getUserById);
+usersRouter.get('/:id',passport.authenticate('jwt', {session: false}), adminAuthMiddleware, usersController.getUserById);
 // crea un nuevo usuario
 usersRouter.post('/', usersController.createUser);
 // actualiza un usuario
-usersRouter.put('/:id',passport.authenticate('jwt', {session: false}), imageValidator, usersController.updateUser);
+usersRouter.put('/:id',passport.authenticate('jwt', {session: false}), adminAuthMiddleware, imageValidator,  usersController.updateUser);
 // elimina un usuario
-usersRouter.delete('/:id',passport.authenticate('jwt', {session: false}), usersController.deleteUser);
+usersRouter.delete('/:id',passport.authenticate('jwt', {session: false}), adminAuthMiddleware, usersController.deleteUser);
 
 export default usersRouter;

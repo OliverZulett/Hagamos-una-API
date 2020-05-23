@@ -1,12 +1,25 @@
 import { statusResponse } from '../functions/statusResponse.function';
 import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+import { IUser } from '../models/user.model';
 
 export default function (req: Request, res: Response, next: NextFunction) {
 
-  if ((<any>req).user.role !== 'ADMIN_ROLE') {
-    return statusResponse(res, 500, 'acceso denegado', {error: 'necestia ser administrador para realizar la operacion'});
-  } 
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return statusResponse(res, 400, '', { err: 'token invalido' });
+  }
   
-  next();
+  const token: string = authHeader.split(' ')[1] || '*';
+  const user: IUser = jwt.decode(token) as IUser;
+  
+  if (user.role === 'ADMIN_ROLE') {
+    return next();
+  } else if (user.id === req.params.id || user.id === req.params.user_id) {
+    return next();
+  } else {
+    return statusResponse(res, 401, '', { err: 'usuario no autorizado' });
+  }
 
 }

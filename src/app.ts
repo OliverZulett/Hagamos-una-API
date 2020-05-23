@@ -19,7 +19,6 @@ app.set('port', process.env.PORT || 3000);
 // middlewares
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
-app.use(bodyParser.json());
 app.use(fileUpload());
 app.use(passport.initialize());
 passport.use(passportMiddleware);

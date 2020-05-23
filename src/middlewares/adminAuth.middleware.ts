@@ -5,7 +5,7 @@ import { IUser } from '../models/user.model';
 
 export default function (req: Request, res: Response, next: NextFunction) {
 
-  const authHeader = req.headers.authorization;
+  const authHeader:string = req.headers.authorization as string;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return statusResponse(res, 400, '', { err: 'token invalido' });

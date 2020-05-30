@@ -11,9 +11,9 @@ const ordersController = {
       .populate("products.product", "name image")
       .exec( async (err, orders) => {
       if (err) return statusResponse(res, 500, "error al buscar pedidos", err);
+      if (orders.length === 0) return statusResponse(res, 404, "No hay ordenes registradas", null);
       await Order.countDocuments((err, total) => {
-        if (err)
-          return statusResponse(res, 500, "error al contar pedidos", err);
+        if (err) return statusResponse(res, 500, "error al contar pedidos", err);
         statusResponse(res, 200, "lista de pedidos", null, {
           pedidos: orders,
           total_pedidos: total,
@@ -30,7 +30,8 @@ const ordersController = {
       .populate("products.product", "name image")
       .exec((err, order: any) => {
 
-        if (err || order === null) return statusResponse(res, 500, "error al buscar pedido", err);
+        if (err) return statusResponse(res, 500, "error al buscar pedido", err);
+        if (order === null) return statusResponse(res, 500, "orden no encontrada", {erros: 'id incorrecto'});
 
         if (!order || Object.keys(order).length === 0)
           return statusResponse(res, 404, "no se encontro el pedido", err);
@@ -49,7 +50,8 @@ const ordersController = {
       });
 
     await User.findById(user_id, async (err, user: any) => {
-      if (err || user === null) return statusResponse(res, 500, "error al buscar usuario", err);
+      if (err) return statusResponse(res, 500, "error al buscar usuario", err);
+      if (user === null) return statusResponse(res, 500, "usuario no encontrado", {erros: 'id incorrecto'});
 
       if (Object.keys(user).length === 0)
         return statusResponse(res, 404, "no se encontro el usuario", err);
@@ -58,8 +60,7 @@ const ordersController = {
       const order = new Order(orderReceived);
 
       await order.save((err, newOrder) => {
-        if (err || newOrder === null)
-          return statusResponse(res, 500, "error al guardar pedido", err);
+        if (err || newOrder === null) return statusResponse(res, 500, "error al guardar pedido", err);
         statusResponse(res, 200, "pedido creado", null, { pedido: newOrder });
       });
     });
@@ -76,8 +77,8 @@ const ordersController = {
     }
 
     await Order.findById(id, async (err, orderForUpdate: any) => {
-      if (err || orderForUpdate === null)
-        return statusResponse(res, 500, "error al encontrar pedido", err);
+      if (err) return statusResponse(res, 500, "error al encontrar pedido", err);
+      if (orderForUpdate === null) return statusResponse(res, 500, "orden no encontrada", {erros: 'id incorrecto'});
 
       const newOrder = { ...orderForUpdate._doc, ...orderReceived };
 
@@ -95,7 +96,8 @@ const ordersController = {
   async deleteOrder(req: Request, res: Response) {
     const id = req.params.id;
     await Order.findByIdAndDelete(id, async (err, orderDeleted: any) => {
-      if (err || orderDeleted === null) return statusResponse(res, 500, "error al eliminar pedido", err);
+      if (err) return statusResponse(res, 500, "error al eliminar pedido", err);
+      if (orderDeleted === null) return statusResponse(res, 500, "orden no encontrada", {erros: 'id incorrecto'});
       statusResponse(res, 200, "pedido eliminado", null, {
         pedido: orderDeleted,
       });

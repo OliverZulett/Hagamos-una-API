@@ -10,6 +10,7 @@ const productsController = {
 
     await Product.find({}, "name image price", async (err, products) => {
       if (err) return statusResponse(res, 500, "error al buscar productos", err);
+      if (products.length === 0) return statusResponse(res, 404, "No hay productos registrados", null);
       await Product.countDocuments((err, total) => {
         if (err) return statusResponse(res, 500, "error al contar productos", err);
         statusResponse( res, 200, "lista de productos", null, {productos: products, total_productos: total});
@@ -21,9 +22,8 @@ const productsController = {
   async getProductById(req: Request, res: Response) {
     const id = req.params.id;
     await Product.findById(id, (err, product:any) => {
-      if (err || product === null) return statusResponse(res, 500, "error al buscar producto", err);
-      if (Object.keys(product).length === 0)
-        return statusResponse(res, 404, "no se encontro el producto", err);
+      if (err) return statusResponse(res, 500, "error al buscar producto", err);
+      if (product === null) return statusResponse(res, 500, "Producto no encontrado", {erros: 'id incorrecto'});
       statusResponse( res, 200, "productos", null, {producto: product});
     });
   },
@@ -57,7 +57,8 @@ const productsController = {
     }
 
     await Product.findById(id, async (err, productForUpdate: any) => {
-      if (err || productForUpdate === null) return statusResponse(res, 500, "error al encontrar producto", err);
+      if (err) return statusResponse(res, 500, "error al encontrar producto", err);
+      if (productForUpdate === null) return statusResponse(res, 404, "Producto no encontrado", {errors: 'Id incorrecto'});
       const newProduct = { ...productForUpdate._doc, ...productReceived };
 
       if ((<any>req).imageExist) {
@@ -78,8 +79,8 @@ const productsController = {
 
     await Product.findByIdAndDelete(id, async (err, productDeleted: any) => {
 
-      if (err || productDeleted === null) return statusResponse(res, 500, "error al eliminar producto", err);
-      
+      if (err) return statusResponse(res, 500, "error al eliminar producto", err);
+      if (productDeleted === null) return statusResponse(res, 404, "Producto no encontrado", {errors: 'Id incorrecto'});
       if (productDeleted.image) {
         const path = `./uploads${req.baseUrl}`;
         await fs.remove(`${path}/${productDeleted.image}`);
